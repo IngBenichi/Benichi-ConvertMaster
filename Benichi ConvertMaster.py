@@ -217,7 +217,10 @@ def main(page: ft.Page):
             thumbnail_url = f"https://img.youtube.com/vi/{video_id}/maxresdefault.jpg"
             cover_image.src = thumbnail_url  # Establecer la URL de la carátula
             cover_image.visible = True  # Asegurarse de que la imagen sea visible
+            cover_image.width = 200  # Ajustar el ancho aquí
+            cover_image.height = 112  # Ajustar la altura aquí
             page.update()  # Actualizar la interfaz
+        
         else:
             show_dialog("Error", "No se pudo extraer el ID del video de la URL proporcionada.")
 
