@@ -41,6 +41,7 @@ def main(page: ft.Page):
         format_selector.value = "mp3"
         resolution_selector.options.clear()
         resolution_selector.visible = False
+        manual_url_entry.value = ""
         page.update()
 
     def search_videos(e):
@@ -194,8 +195,34 @@ def main(page: ft.Page):
 
         page.update()
 
+    # Nueva función para obtener la carátula desde la URL manual
+    def get_thumbnail(e):
+        manual_url = manual_url_entry.value.strip()
+
+        # Validar si hay una URL ingresada manualmente
+        if not manual_url:
+            show_dialog("Advertencia", "Por favor, ingrese una URL válida.")
+            return
+
+        # Extraer el video_id de la URL manualmente (manejo de distintos formatos de URL)
+        video_id = None
+        if 'v=' in manual_url:
+            video_id = manual_url.split('v=')[-1].split('&')[0]
+        elif 'youtu.be/' in manual_url:
+            video_id = manual_url.split('youtu.be/')[-1].split('?')[0]
+
+        if video_id:
+            # Cargar la carátula a partir del video_id
+            global thumbnail_url
+            thumbnail_url = f"https://img.youtube.com/vi/{video_id}/maxresdefault.jpg"
+            cover_image.src = thumbnail_url  # Establecer la URL de la carátula
+            cover_image.visible = True  # Asegurarse de que la imagen sea visible
+            page.update()  # Actualizar la interfaz
+        else:
+            show_dialog("Error", "No se pudo extraer el ID del video de la URL proporcionada.")
+
     search_entry = ft.TextField(label="Buscar canción:", on_change=search_videos)
-    manual_url_entry = ft.TextField(label="Ingrese URL de la canción:", visible=False)
+    manual_url_entry = ft.TextField(label="Ingrese URL de la canción:", visible=True)  # Hacemos el campo visible
     output_path_entry = ft.TextField(label="Ruta de salida:", disabled=True)
     output_path_label = ft.Text("Ruta de salida: No seleccionada")
     browse_button = ft.ElevatedButton("Buscar", on_click=browse_output_path)
@@ -207,15 +234,9 @@ def main(page: ft.Page):
             ft.dropdown.Option("mp4"),
         ],
         value="mp3",
-        on_change=lambda e: update_resolutions_button_visibility()
+        on_change=lambda e: get_resolutions(e)
     )
-    
-    def update_resolutions_button_visibility():
-        get_resolutions_button.visible = (format_selector.value == "mp4")
-        page.update()
 
-    get_resolutions_button = ft.ElevatedButton("Obtener resoluciones", on_click=get_resolutions, visible=False)
-    
     resolution_selector = ft.Dropdown(
         label="Resolución:",
         options=[],
@@ -223,14 +244,16 @@ def main(page: ft.Page):
     )
 
     convert_button = ft.ElevatedButton("Convertir", on_click=convert)
+    clear_button = ft.ElevatedButton("Limpiar", on_click=clear_fields)
+
+    # Nuevo botón para obtener la carátula desde la URL manual
+    get_thumbnail_button = ft.ElevatedButton("Obtener Carátula", on_click=get_thumbnail)
 
     urls_list_view = ft.ListView()
     video_title_text = ft.Text()
     cover_image = ft.Image()
     progress_bar = ft.ProgressBar(visible=False)
     download_status = ft.Text()
-
-    clear_button = ft.ElevatedButton("Limpiar", on_click=clear_fields)
 
     page.add(
         search_entry,
@@ -240,10 +263,10 @@ def main(page: ft.Page):
         output_path_entry,
         browse_button,
         format_selector,
-        get_resolutions_button,
         resolution_selector,
         convert_button,
         clear_button,
+        get_thumbnail_button,  # Botón para obtener la carátula
         cover_image,
         video_title_text,
         progress_bar,
