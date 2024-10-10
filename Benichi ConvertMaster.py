@@ -219,10 +219,20 @@ def main(page: ft.Page):
             cover_image.visible = True  # Asegurarse de que la imagen sea visible
             cover_image.width = 200  # Ajustar el ancho aquí
             cover_image.height = 112  # Ajustar la altura aquí
-            page.update()  # Actualizar la interfaz
-        
+
+            # Obtener el nombre del video usando yt_dlp
+            try:
+                with yt_dlp.YoutubeDL() as ydl:
+                    info = ydl.extract_info(manual_url, download=False)  # Cambiar video_url por manual_url
+                    video_title = info.get('title', 'Título no disponible')  # Extraer el título del video
+                    video_title_text.value = video_title  # Establecer el nombre del video
+            except Exception as e:
+                video_title_text.value = "Error al obtener el título"
+                print(f"Error al obtener el título del video: {str(e)}")
         else:
             show_dialog("Error", "No se pudo extraer el ID del video de la URL proporcionada.")
+
+
 
     search_entry = ft.TextField(label="Buscar canción:", on_change=search_videos)
     manual_url_entry = ft.TextField(label="Ingrese URL de la canción:", visible=True)  # Hacemos el campo visible
