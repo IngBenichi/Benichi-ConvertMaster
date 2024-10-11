@@ -8,7 +8,7 @@ import queue
 import time
 import requests
 
-API_KEY = 'AIzaSyCaxgc6BQKbGnaw8mIq4d_PZu_KPajOeAM'  
+API_KEY = ''  
 
 def main(page: ft.Page):
     page.title = "SonicMingle"
