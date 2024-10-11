@@ -8,7 +8,7 @@ import queue
 import time
 import requests
 
-API_KEY = ''  # Asegúrate de ingresar tu API Key aquí
+API_KEY = ''  
 
 def main(page: ft.Page):
     page.title = "SonicMingle"
@@ -68,7 +68,7 @@ def main(page: ft.Page):
             page.update()
         else:
             show_dialog("Error", "Se agotaron las cuotas de la API. Por favor, ingrese la URL del video manualmente.")
-            manual_url_entry.visible = True  # Habilitar el campo para ingresar la URL manual
+            manual_url_entry.visible = True  
             page.update()
 
     def select_video(video_id, title):
@@ -80,7 +80,7 @@ def main(page: ft.Page):
         thumbnail_url = f"https://img.youtube.com/vi/{video_id}/maxresdefault.jpg"
         cover_image.src = thumbnail_url
 
-        urls_list_view.controls.clear()  # Limpiar la lista de URLs después de seleccionar un video
+        urls_list_view.controls.clear()  
         page.update()
 
     def convert(e):
@@ -89,16 +89,16 @@ def main(page: ft.Page):
             show_dialog("Advertencia", "Por favor, completa todos los campos y añade al menos un enlace.")
             return
     
-        # Si hay una URL manual, añádala a la lista de URLs
+        
         if manual_url_entry.value.strip():
             youtube_urls.append(manual_url_entry.value.strip())
-            # Extraer el video_id de la URL manual
+            
             video_id = manual_url_entry.value.split('=')[-1] if 'v=' in manual_url_entry.value else manual_url_entry.value.split('/')[-1]
-            # Cargar la carátula
+            
             global thumbnail_url
             thumbnail_url = f"https://img.youtube.com/vi/{video_id}/maxresdefault.jpg"
-            cover_image.src = thumbnail_url  # Establecer la URL de la carátula
-            cover_image.visible = True  # Asegúrate de que la imagen sea visible
+            cover_image.src = thumbnail_url  
+            cover_image.visible = True  
     
         for youtube_url in youtube_urls:
             download_queue.put((youtube_url, output_path))
@@ -195,16 +195,16 @@ def main(page: ft.Page):
 
         page.update()
 
-    # Nueva función para obtener la carátula desde la URL manual
+    
     def get_thumbnail(e):
         manual_url = manual_url_entry.value.strip()
 
-        # Validar si hay una URL ingresada manualmente
+        
         if not manual_url:
             show_dialog("Advertencia", "Por favor, ingrese una URL válida.")
             return
 
-        # Extraer el video_id de la URL manualmente (manejo de distintos formatos de URL)
+        
         video_id = None
         if 'v=' in manual_url:
             video_id = manual_url.split('v=')[-1].split('&')[0]
@@ -212,20 +212,20 @@ def main(page: ft.Page):
             video_id = manual_url.split('youtu.be/')[-1].split('?')[0]
 
         if video_id:
-            # Cargar la carátula a partir del video_id
+            
             global thumbnail_url
             thumbnail_url = f"https://img.youtube.com/vi/{video_id}/maxresdefault.jpg"
-            cover_image.src = thumbnail_url  # Establecer la URL de la carátula
-            cover_image.visible = True  # Asegurarse de que la imagen sea visible
-            cover_image.width = 200  # Ajustar el ancho aquí
-            cover_image.height = 112  # Ajustar la altura aquí
+            cover_image.src = thumbnail_url  
+            cover_image.visible = True  
+            cover_image.width = 200  
+            cover_image.height = 112  
 
-            # Obtener el nombre del video usando yt_dlp
+            
             try:
                 with yt_dlp.YoutubeDL() as ydl:
-                    info = ydl.extract_info(manual_url, download=False)  # Cambiar video_url por manual_url
-                    video_title = info.get('title', 'Título no disponible')  # Extraer el título del video
-                    video_title_text.value = video_title  # Establecer el nombre del video
+                    info = ydl.extract_info(manual_url, download=False)  
+                    video_title = info.get('title', 'Título no disponible')  
+                    video_title_text.value = video_title 
             except Exception as e:
                 video_title_text.value = "Error al obtener el título"
                 print(f"Error al obtener el título del video: {str(e)}")
@@ -235,7 +235,7 @@ def main(page: ft.Page):
 
 
     search_entry = ft.TextField(label="Buscar canción:", on_change=search_videos)
-    manual_url_entry = ft.TextField(label="Ingrese URL de la canción:", visible=True)  # Hacemos el campo visible
+    manual_url_entry = ft.TextField(label="Ingrese URL de la canción:", visible=True)  
     output_path_entry = ft.TextField(label="Ruta de salida:", disabled=True)
     output_path_label = ft.Text("Ruta de salida: No seleccionada")
     browse_button = ft.ElevatedButton("Buscar", on_click=browse_output_path)
@@ -259,7 +259,7 @@ def main(page: ft.Page):
     convert_button = ft.ElevatedButton("Convertir", on_click=convert)
     clear_button = ft.ElevatedButton("Limpiar", on_click=clear_fields)
 
-    # Nuevo botón para obtener la carátula desde la URL manual
+    
     get_thumbnail_button = ft.ElevatedButton("Obtener Carátula", on_click=get_thumbnail)
 
     urls_list_view = ft.ListView()
@@ -279,7 +279,7 @@ def main(page: ft.Page):
         resolution_selector,
         convert_button,
         clear_button,
-        get_thumbnail_button,  # Botón para obtener la carátula
+        get_thumbnail_button,  
         cover_image,
         video_title_text,
         progress_bar,
